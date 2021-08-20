@@ -1,2 +1,2 @@
-# Mood-Games-Base-Project
-Copy of Mood Games Base Project.
+# Base-Project
+This is a base project I made in a company for hyper-casual games.

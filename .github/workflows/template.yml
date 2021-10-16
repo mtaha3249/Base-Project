@@ -112,8 +112,8 @@ jobs:
 
      - uses: actions/download-artifact@v2
        with:
-         name: buildAndroid
-         path: build
+         name: Android
+         path: build/
 
      - name: Display structure of root files
        run: ls -R

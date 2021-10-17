@@ -27,7 +27,7 @@ jobs:
         with:
           slack-function: send-message
           slack-bot-user-oauth-access-token: ${{ secrets.SLACK_TOKEN }}
-          slack-channel: ${{ secrets.CHANNEL_NAME }}
+          slack-channel: ${{ secrets.APP_NAME }}
           slack-text: This is a message
 
       - name: Send "Slack Message" Result

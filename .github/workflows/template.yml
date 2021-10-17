@@ -9,6 +9,18 @@ env:
   UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
 
 jobs:
+  sendNotification:
+      name: Commit Notification
+      runs-on: ubuntu-latest
+      steps:
+        - uses: actions-ecosystem/action-slack-notifier@v1
+          with:
+            slack_token: ${{ secrets.SLACK_TOKEN }}
+            channel: ${{ secrets.APP_NAME }}
+            message: ${{ github.actor }} pushed commits.
+            color: green # optional
+            verbose: true # optional
+            
   checkLicense:
     name: Check for the Unity license ☑️
     runs-on: ubuntu-latest
@@ -107,15 +119,19 @@ jobs:
           targetPlatform: ${{ matrix.targetPlatform }}
 #           buildName: ${{ secrets.APP_NAME }}
 
-      # Upload to Drive
-     - name: Upload build to Google Drive
-       uses: Jodebu/upload-to-drive@master
-       id: driveUpload
+     - uses: actions/upload-artifact@v2
        with:
-          target: build/build_${{ matrix.targetPlatform }}.apk
-          name: ${{ matrix.targetPlatform }} ${{ secrets.APP_NAME }}
-          credentials: ${{ secrets.DRIVE_CREDENTIALS }}
-          folder: ${{ secrets.DRIVE_FOLDER }}
+          path: build/${{ matrix.targetPlatform }}
+
+      # Upload to Drive
+#      - name: Upload build to Google Drive
+#        uses: Jodebu/upload-to-drive@master
+#        id: driveUpload
+#        with:
+#           target: build/build_${{ matrix.targetPlatform }}.apk
+#           name: ${{ matrix.targetPlatform }} ${{ secrets.APP_NAME }}
+#           credentials: ${{ secrets.DRIVE_CREDENTIALS }}
+#           folder: ${{ secrets.DRIVE_FOLDER }}
 
      - name: Slack Notification
        uses: actions-ecosystem/action-slack-notifier@v1

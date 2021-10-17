@@ -64,8 +64,6 @@ jobs:
    strategy:
      fail-fast: false
      matrix:
-        projectPath:
-          - Base-Project
         targetPlatform:
           - Android
 #           - StandaloneWindows64
@@ -102,7 +100,6 @@ jobs:
      - name: Build projects
        uses: webbertakken/unity-builder@v2
        with:
-          projectPath: ${{ matrix.projectPath }}
           targetPlatform: ${{ matrix.targetPlatform }}
           buildName: ${{ secrets.APP_NAME }}
 

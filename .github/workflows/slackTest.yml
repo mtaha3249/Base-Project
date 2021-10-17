@@ -3,48 +3,49 @@ name: Notify Labeled
 on: workflow_dispatch
 
 jobs:
-#   sendNotification:
-#       name: Send Test Notification
-# #     notify:
-#       runs-on: ubuntu-latest
-#       steps:
-#         - uses: actions-ecosystem/action-slack-notifier@v1
-#           with:
-#             slack_token: ${{ secrets.SLACK_TOKEN }}
-#             channel: ${{ secrets.CHANNEL_NAME }}
-#             message: 'This text is for notifications.<https://google.com|this is a link>'
-#             color: green # optional
-#             verbose: false # optional
-  slack-thread:
-    runs-on: ubuntu-latest
-    name: Sends a message to Slack when a push, a pull request or an issue is made
+  sendNotification:
+      name: Send Test Notification
+#     notify:
+      runs-on: ubuntu-latest
+      steps:
+        - name: Slack Notification
+          uses: actions-ecosystem/action-slack-notifier@v1
+          with:
+            slack_token: ${{ secrets.SLACK_TOKEN }}
+            channel: ${{ secrets.APP_NAME }}
+            message: Build of ${{ secrets.APP_NAME }} game is uploaded to "<https://www.google.com/|Google Drive>."
+            color: green # optional
+            verbose: false # optional
+#   slack-thread:
+#     runs-on: ubuntu-latest
+#     name: Sends a message to Slack when a push, a pull request or an issue is made
 
-    steps:
-      - name: Send Slack Message
-        uses: archive/github-actions-slack@master
-        id: send-message
+#     steps:
+#       - name: Send Slack Message
+#         uses: archive/github-actions-slack@master
+#         id: send-message
 
-        with:
-          slack-function: send-message
-          slack-bot-user-oauth-access-token: ${{ secrets.SLACK_TOKEN }}
-          slack-channel: ${{ secrets.APP_NAME }}
-          slack-text: This is a message
+#         with:
+#           slack-function: send-message
+#           slack-bot-user-oauth-access-token: ${{ secrets.SLACK_TOKEN }}
+#           slack-channel: ${{ secrets.APP_NAME }}
+#           slack-text: This is a message
 
-      - name: Send "Slack Message" Result
-        run: echo "Data - ${{ steps.send-message.outputs.slack-result }}"
+#       - name: Send "Slack Message" Result
+#         run: echo "Data - ${{ steps.send-message.outputs.slack-result }}"
 
-      - name: Some step in between
-        run: echo "..."
+#       - name: Some step in between
+#         run: echo "..."
 
-      - name: Send Thread Message
-        uses: archive/github-actions-slack@master
-        with:
-          slack-function: send-message
-          slack-bot-user-oauth-access-token: ${{ secrets.SLACK_TOKEN }}
-          slack-channel: ${{ fromJson(steps.send-message.outputs.slack-result).response.channel }}
-          slack-text: This is a thread reply
-          slack-optional-thread_ts: ${{ fromJson(steps.send-message.outputs.slack-result).response.message.ts }}
-          #slack-optional-reply_broadcast: true # To broadcast thread reply in channel
+#       - name: Send Thread Message
+#         uses: archive/github-actions-slack@master
+#         with:
+#           slack-function: send-message
+#           slack-bot-user-oauth-access-token: ${{ secrets.SLACK_TOKEN }}
+#           slack-channel: ${{ fromJson(steps.send-message.outputs.slack-result).response.channel }}
+#           slack-text: This is a thread reply
+#           slack-optional-thread_ts: ${{ fromJson(steps.send-message.outputs.slack-result).response.message.ts }}
+#           #slack-optional-reply_broadcast: true # To broadcast thread reply in channel
 
-      - name: Send "Send Thread Message" Result
-        run: echo "Data - ${{ steps.send-message.outputs.slack-result }}"
+#       - name: Send "Send Thread Message" Result
+#         run: echo "Data - ${{ steps.send-message.outputs.slack-result }}"

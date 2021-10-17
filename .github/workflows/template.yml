@@ -1,6 +1,9 @@
-name: GameCI Template 🎮
+name: Deployment 🎮
 
-on: push
+on:
+  push:
+    branches:
+    - develop
 
 env:
   UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
@@ -97,6 +100,7 @@ jobs:
            Library-build-
            Library-
 
+      # Building Project
      - name: Build projects
        uses: webbertakken/unity-builder@v2
        with:
@@ -107,26 +111,7 @@ jobs:
      - name: Upload build to Google Drive
        uses: Jodebu/upload-to-drive@master
        with:
-          target: build
-          name: ${{ matrix.targetPlatform }}
+          target: build.apk
+          name: ${{ matrix.targetPlatform }} ${{ secrets.APP_NAME }}
           credentials: ${{ secrets.DRIVE_CREDENTIALS }}
           folder: ${{ secrets.DRIVE_FOLDER }}
-          
-#      - uses: actions/upload-artifact@v2
-#        with:
-#          name: build-Android
-#          path: build/Android
-
-#   deployPages:
-#    needs: buildAndroid
-#    name: Deploy to Github Pages 🚀
-#    runs-on: ubuntu-latest
-#    steps:
-#      - name: Checkout Repository
-#        uses: actions/checkout@v2
-
-#      - name: Download Android Artifact
-#        uses: actions/download-artifact@v2
-#        with:
-#          name: build-Android
-#          path: build/Android

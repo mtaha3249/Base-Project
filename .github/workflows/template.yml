@@ -121,7 +121,7 @@ jobs:
        uses: actions-ecosystem/action-slack-notifier@v1
        with:
           slack_token: ${{ secrets.SLACK_TOKEN }}
-          channel: ${{ secrets.CHANNEL_NAME }}
+          channel: ${{ secrets.APP_NAME }}
           message: ${{ matrix.targetPlatform }} Build of ${{ secrets.APP_NAME }} game is uploaded to <steps.driveUpload.outputs.link|Google Drive>.
           color: green # optional
           verbose: false # optional

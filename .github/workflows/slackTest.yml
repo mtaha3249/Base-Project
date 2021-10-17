@@ -13,7 +13,7 @@ jobs:
           with:
             slack_token: ${{ secrets.SLACK_TOKEN }}
             channel: ${{ secrets.APP_NAME }}
-            message: Build of ${{ secrets.APP_NAME }} game is uploaded to "<https://www.google.com/|Google Drive>."
+            message: Build of ${{ secrets.APP_NAME }} game is uploaded to <https://www.google.com/|Google Drive>.
             color: green # optional
             verbose: false # optional
 #   slack-thread:

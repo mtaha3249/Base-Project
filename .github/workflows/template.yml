@@ -111,7 +111,7 @@ jobs:
      - name: Upload build to Google Drive
        uses: Jodebu/upload-to-drive@master
        with:
-          target: build/${{ secrets.APP_NAME }}.apk
+          target: ${{ matrix.targetPlatform }}/${{ secrets.APP_NAME }}.apk
           name: ${{ matrix.targetPlatform }} ${{ secrets.APP_NAME }}
           credentials: ${{ secrets.DRIVE_CREDENTIALS }}
           folder: ${{ secrets.DRIVE_FOLDER }}

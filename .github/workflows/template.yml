@@ -14,12 +14,56 @@ jobs:
         if: ${{ !startsWith(env.UNITY_LICENSE, '<') }}
         run: exit 1
         
-  buildAndTestForSomePlatforms:
-    name: Build for ${{ matrix.targetPlatform }} on version ${{ matrix.unityVersion }}
-    runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
+  testRunner:
+   needs: checkLicense
+   name: Test all modes 📝
+   runs-on: ubuntu-latest
+   steps:
+     - name: Checkout code
+       uses: actions/checkout@v2
+
+     - name: Create LFS file list
+       run: git lfs ls-files -l | cut -d' ' -f1 | sort > .lfs-assets-id
+
+     - name: Restore LFS cache
+       uses: actions/cache@v2
+       id: lfs-cache
+       with:
+         path: .git/lfs
+         key: ${{ runner.os }}-lfs-${{ hashFiles('.lfs-assets-id') }}
+
+     - name: Git LFS Pull
+       run: |
+         git lfs pull
+         git add .
+         git reset --hard
+
+     - name: Restore Library cache
+       uses: actions/cache@v2
+       with:
+         path: Library
+         key: Library-test-project
+         restore-keys: |
+           Library-test-project-
+           Library-
+
+     - uses: webbertakken/unity-test-runner@v2
+       id: testRunner
+       with:
+         testMode: all
+
+     - uses: actions/upload-artifact@v2
+       with:
+         name: Test results (all modes)
+         path: ${{ steps.testRunner.outputs.artifactsPath }}
+
+  Build:
+   needs: testRunner
+   name: Build for ${{ matrix.targetPlatform }} on version ${{ matrix.unityVersion }}
+   runs-on: ubuntu-latest
+   strategy:
+     fail-fast: false
+     matrix:
         projectPath:
           - Base-Project
         unityVersion:
@@ -28,137 +72,52 @@ jobs:
           - Android
 #           - StandaloneWindows64
 #           - StandaloneLinux64
-    steps:
+   steps:
+     - name: Checkout code
+       uses: actions/checkout@v2
 
-      # Checkout
-      - name: Checkout repository
-        uses: actions/checkout@v2
-        with:
-          lfs: true
-    
-      # Cache
-      - uses: actions/cache@v1.1.0
-        with:
-          path: ${{ matrix.projectPath }}/Library
-          key: Library-${{ matrix.projectPath }}-${{ matrix.targetPlatform }}
-          restore-keys: |
-            Library-${{ matrix.projectPath }}-
-            Library-
+     - name: Create LFS file list
+       run: git lfs ls-files -l | cut -d' ' -f1 | sort > .lfs-assets-id
 
-      # Test
-      - name: Run tests
-        uses: webbertakken/unity-test-runner@v1.3
-        id: testRunner
-        with:
-          projectPath: ${{ matrix.projectPath }}
-          unityVersion: ${{ matrix.unityVersion }}
-      
-      # Upload test results
-      - uses: actions/upload-artifact@v1
-        with:
-          name: Test results (all modes)
-          path: ${{ steps.testRunner.outputs.artifactsPath }}
+     - name: Restore LFS cache
+       uses: actions/cache@v2
+       id: lfs-cache
+       with:
+         path: .git/lfs
+         key: ${{ runner.os }}-lfs-${{ hashFiles('.lfs-assets-id') }}
 
-      # Build
-      - name: Build projects
-        uses: webbertakken/unity-builder@v0.10
-        with:
+     - name: Git LFS Pull
+       run: |
+         git lfs pull
+         git add .
+         git reset --hard
+
+     - name: Restore Library cache
+       uses: actions/cache@v2
+       with:
+         path: Library
+         key: Library-build-Android
+         restore-keys: |
+           Library-build-
+           Library-
+
+     - name: Build projects
+       uses: webbertakken/unity-builder@v2
+       with:
           projectPath: ${{ matrix.projectPath }}
           unityVersion: ${{ matrix.unityVersion }}
           targetPlatform: ${{ matrix.targetPlatform }}
           buildName: ${{ secrets.APP_NAME }}
 
       # Upload to Drive
-      - name: Upload build to Google Drive
-        uses: Jodebu/upload-to-drive@master
-        with:
+     - name: Upload build to Google Drive
+       uses: Jodebu/upload-to-drive@master
+       with:
           target: build
           name: ${{ matrix.targetPlatform }}
           credentials: ${{ secrets.DRIVE_CREDENTIALS }}
           folder: ${{ secrets.DRIVE_FOLDER }}
-        
-#   testRunner:
-#    needs: checkLicense
-#    name: Test all modes 📝
-#    runs-on: ubuntu-latest
-#    steps:
-#      - name: Checkout code
-#        uses: actions/checkout@v2
-
-#      - name: Create LFS file list
-#        run: git lfs ls-files -l | cut -d' ' -f1 | sort > .lfs-assets-id
-
-#      - name: Restore LFS cache
-#        uses: actions/cache@v2
-#        id: lfs-cache
-#        with:
-#          path: .git/lfs
-#          key: ${{ runner.os }}-lfs-${{ hashFiles('.lfs-assets-id') }}
-
-#      - name: Git LFS Pull
-#        run: |
-#          git lfs pull
-#          git add .
-#          git reset --hard
-
-#      - name: Restore Library cache
-#        uses: actions/cache@v2
-#        with:
-#          path: Library
-#          key: Library-test-project
-#          restore-keys: |
-#            Library-test-project-
-#            Library-
-
-#      - uses: webbertakken/unity-test-runner@v2
-#        id: testRunner
-#        with:
-#          testMode: all
-
-#      - uses: actions/upload-artifact@v2
-#        with:
-#          name: Test results (all modes)
-#          path: ${{ steps.testRunner.outputs.artifactsPath }}
-
-#   buildAndroid:
-#    needs: testRunner
-#    name: Build for Android 📱
-#    runs-on: ubuntu-latest
-#    strategy:
-#      fail-fast: false
-#    steps:
-#      - name: Checkout code
-#        uses: actions/checkout@v2
-
-#      - name: Create LFS file list
-#        run: git lfs ls-files -l | cut -d' ' -f1 | sort > .lfs-assets-id
-
-#      - name: Restore LFS cache
-#        uses: actions/cache@v2
-#        id: lfs-cache
-#        with:
-#          path: .git/lfs
-#          key: ${{ runner.os }}-lfs-${{ hashFiles('.lfs-assets-id') }}
-
-#      - name: Git LFS Pull
-#        run: |
-#          git lfs pull
-#          git add .
-#          git reset --hard
-
-#      - name: Restore Library cache
-#        uses: actions/cache@v2
-#        with:
-#          path: Library
-#          key: Library-build-Android
-#          restore-keys: |
-#            Library-build-
-#            Library-
-
-#      - uses: webbertakken/unity-builder@v2
-#        with:
-#          targetPlatform: Android
-
+          
 #      - uses: actions/upload-artifact@v2
 #        with:
 #          name: build-Android

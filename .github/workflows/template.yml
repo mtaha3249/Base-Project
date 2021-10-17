@@ -59,15 +59,13 @@ jobs:
 
   Build:
    needs: testRunner
-   name: Build for ${{ matrix.targetPlatform }} on version ${{ matrix.unityVersion }}
+   name: Build for ${{ matrix.targetPlatform }}
    runs-on: ubuntu-latest
    strategy:
      fail-fast: false
      matrix:
         projectPath:
           - Base-Project
-        unityVersion:
-          - 2020.3.0f1
         targetPlatform:
           - Android
 #           - StandaloneWindows64
@@ -105,7 +103,6 @@ jobs:
        uses: webbertakken/unity-builder@v2
        with:
           projectPath: ${{ matrix.projectPath }}
-          unityVersion: ${{ matrix.unityVersion }}
           targetPlatform: ${{ matrix.targetPlatform }}
           buildName: ${{ secrets.APP_NAME }}
 

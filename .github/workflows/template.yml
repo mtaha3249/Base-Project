@@ -1,6 +1,9 @@
-name: GameCI Template 🎮
+name: Deployment 🎮
 
-on: push
+on:
+  push:
+    branches:
+    - develop
 
 env:
   UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
@@ -57,12 +60,17 @@ jobs:
          name: Test results (all modes)
          path: ${{ steps.testRunner.outputs.artifactsPath }}
 
-  buildAndroid:
+  Build:
    needs: testRunner
-   name: Build for Android 📱
+   name: Build for ${{ matrix.targetPlatform }}
    runs-on: ubuntu-latest
    strategy:
      fail-fast: false
+     matrix:
+        targetPlatform:
+          - Android
+#           - StandaloneWindows64
+#           - StandaloneLinux64
    steps:
      - name: Checkout code
        uses: actions/checkout@v2
@@ -92,26 +100,18 @@ jobs:
            Library-build-
            Library-
 
-     - uses: webbertakken/unity-builder@v2
+      # Building Project
+     - name: Build projects
+       uses: webbertakken/unity-builder@v2
        with:
-         targetPlatform: Android
+          targetPlatform: ${{ matrix.targetPlatform }}
+          buildName: ${{ secrets.APP_NAME }}
 
-     - uses: actions/upload-artifact@v2
+      # Upload to Drive
+     - name: Upload build to Google Drive
+       uses: Jodebu/upload-to-drive@master
        with:
-         name: build-Android
-         path: build/Android
-
-
-  deployPages:
-   needs: buildAndroid
-   name: Deploy to Github Pages 🚀
-   runs-on: ubuntu-latest
-   steps:
-     - name: Checkout Repository
-       uses: actions/checkout@v2
-
-     - name: Download Android Artifact
-       uses: actions/download-artifact@v2
-       with:
-         name: build-Android
-         path: build/Android
+          target: build/${{ secrets.APP_NAME }}.apk
+          name: ${{ matrix.targetPlatform }} ${{ secrets.APP_NAME }}
+          credentials: ${{ secrets.DRIVE_CREDENTIALS }}
+          folder: ${{ secrets.DRIVE_FOLDER }}

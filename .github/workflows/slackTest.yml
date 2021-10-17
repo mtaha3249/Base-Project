@@ -3,7 +3,8 @@ name: Notify Labeled
 on: workflow_dispatch
 
 jobs:
-  requestManualActivationFile:
+  sendNotification:
+      name: Send Test Notification
 #     notify:
       runs-on: ubuntu-latest
       steps:

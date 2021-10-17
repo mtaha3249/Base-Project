@@ -119,18 +119,13 @@ jobs:
        with:
           targetPlatform: ${{ matrix.targetPlatform }}
           buildName: ${{ secrets.APP_NAME }}
-          buildsPath: builds
-
-#      - uses: actions/upload-artifact@v2
-#        with:
-#           path: build/${{ matrix.targetPlatform }}
 
 #       Upload to Drive
      - name: Upload build to Google Drive
        uses: Jodebu/upload-to-drive@master
        id: driveUpload
        with:
-          target: builds/${{ secrets.APP_NAME }}.apk
+          target: build
           name: ${{ matrix.targetPlatform }} ${{ secrets.APP_NAME }}
           credentials: ${{ secrets.DRIVE_CREDENTIALS }}
           folder: ${{ secrets.DRIVE_FOLDER }}

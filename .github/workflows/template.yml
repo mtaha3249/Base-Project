@@ -125,7 +125,8 @@ jobs:
        uses: Jodebu/upload-to-drive@master
        id: driveUpload
        with:
-          target: build
+#           target: build
+          target: ./${{ secrets.APP_NAME }}.apk
           name: ${{ matrix.targetPlatform }} ${{ secrets.APP_NAME }}
           credentials: ${{ secrets.DRIVE_CREDENTIALS }}
           folder: ${{ secrets.DRIVE_FOLDER }}

@@ -17,7 +17,8 @@ jobs:
           with:
             slack_token: ${{ secrets.SLACK_TOKEN }}
             channel: ${{ secrets.APP_NAME }}
-            message: ${{ github.actor }} pushed commits.
+            message: |
+              @${{ github.actor }} pushed commits.
             color: green # optional
             verbose: true # optional
             
